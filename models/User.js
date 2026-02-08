@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const {createHmac,randomBytes} =require('crypto')
 
 const userSchema = new mongoose.Schema({
-  name: {
+  fullName: {
     type: String,
     required:true
 
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
 
   salt:{
     type:String,
-    required:true
+    
   },
   password:{
     type:String,
@@ -33,7 +33,7 @@ const User =mongoose.model("user", userSchema)
 
 module.exports =User
 
-mongoose.pre('save',function (next){
+userSchema.pre('save',function (next){
     const user =this;
     if(!user.isModified("password")) return;
 
