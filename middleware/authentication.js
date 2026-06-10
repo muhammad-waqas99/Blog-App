@@ -16,7 +16,7 @@ function checkForAuthenticationCookie(cookieName) {
     const payload = verifyToken(token);
 
 
-     console.log(" USER PAYLOAD:", userPayload);
+     console.log(" USER PAYLOAD:",payload);
     if (!payload) {
       req.user = null;
       return next();
