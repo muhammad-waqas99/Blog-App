@@ -53,14 +53,14 @@ app.use('/user' , userRouter)
 app.use('/blog' , blogRouter)
 
 
-app.get('/', async(req, res) => {
-  const allBlogs =await Blog.find({})
+app.get('/', async (req, res) => {
+  const allBlogs = await Blog.aggregate([
+    { $sample: { size: 100 } } // jitne blogs chahiye utna size
+  ]);
 
-
-  res.render("home",{
-    user : req.user,
-    blogs : allBlogs
-
+  res.render("home", {
+    user: req.user,
+    blogs: allBlogs
   });
 });
 
