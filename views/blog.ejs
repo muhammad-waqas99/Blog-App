@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partial/head") %>
+    <title>Blog</title>
+</head>
+
+<body class="bg-light">
+
+    <%- include("partial/nav") %>
+
+    <div class="container py-5">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+                    <img
+                        src="<%= blog.bodyImageURL %>"
+                        alt="Blog Image"
+                        class="img-fluid"
+                        style="max-height: 500px; object-fit: cover;"
+                    >
+
+                    <div class="card-body p-4 p-md-5">
+
+                        <!-- Blog Title -->
+                        <h1 class="fw-bold mb-4">
+                            <%= blog.title %>
+                        </h1>
+
+                       
+                        <div class="d-flex align-items-center mb-4">
+                            <img
+                                src="<%= blog.createdBy.userProfileImage %>"
+                                alt="profile"
+                                class="rounded-circle me-3"
+                                width="55"
+                                height="55"
+                                style="object-fit: cover;"
+                            >
+
+                            <div>
+                                <h6 class="mb-0 fw-semibold">
+                                    <%= blog.createdBy.fullName %>
+                                </h6>
+                                <small class="text-muted">
+                                    Blog Author
+                                </small>
+                            </div>
+                        </div>
+
+                     
+                        <div
+                            class="fs-5 text-secondary lh-lg"
+                            style="white-space: pre-line;"
+                        >
+                            <%= blog.body %>
+                        </div>
+
+                    </div>
+                </div>
+
+                <% if (locals.user) { %>
+
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-body p-4">
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h4 class="fw-bold mb-0">
+                                    Comments
+                                </h4>
+
+                                <span class="badge bg-primary">
+                                    <%= comments.length %>
+                                </span>
+                            </div>
+
+                            <form action="/blog/comment/<%= blog._id %>" method="post">
+
+                                <div class="mb-3">
+                                    <textarea
+                                        name="content"
+                                        class="form-control"
+                                        id="comment"
+                                        rows="4"
+                                        placeholder="Write your comment..."
+                                        required
+                                    ></textarea>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary px-4"
+                                >
+                                    Add Comment
+                                </button>
+
+                            </form>
+                        </div>
+                    </div>
+
+                <% } %>
+
+        
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body p-4">
+
+                        <h4 class="fw-bold mb-4">
+                            All Comments
+                        </h4>
+
+                        <% comments.forEach(comment => { %>
+
+                            <div class="d-flex mb-4">
+
+                                <img
+                                    src="<%= comment.createdBy.userProfileImage %>"
+                                    alt="profile"
+                                    class="rounded-circle me-3"
+                                    width="50"
+                                    height="50"
+                                    style="object-fit: cover;"
+                                >
+
+                                <div class="w-100">
+
+                                    <div class="bg-light rounded-4 p-3">
+
+                                        <h6 class="fw-semibold mb-2">
+                                            <%= comment.createdBy.fullName %>
+                                        </h6>
+
+                                        <div
+                                            style="white-space: pre-line;"
+                                        >
+                                            <%= comment.content %>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        <% }) %>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <%- include("partial/script") %>
+
+</body>
+</html>

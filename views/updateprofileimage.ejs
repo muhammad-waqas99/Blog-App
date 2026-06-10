@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partial/head") %>
+    <title>Update Profile Image</title>
+</head>
+
+<body class="bg-light">
+
+    <%- include("partial/nav") %>
+
+    <div class="container py-5">
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-6">
+
+                <div class="card shadow border-0 rounded-4">
+
+                    <div class="card-body p-4">
+
+                        <h3 class="text-center fw-bold mb-4">
+                            Update Profile Photo
+                        </h3>
+
+                        <form action="/user/update-profile-image"
+                              method="POST"
+                              enctype="multipart/form-data">
+
+                            <!-- Current Image -->
+                            <div class="text-center mb-4">
+
+                                <img
+                                    id="previewImage"
+                                    src="<%= user.userProfileImage %>"
+                                    alt="Profile Image"
+                                    class="rounded-circle shadow border"
+                                    width="180"
+                                    height="180"
+                                    style="object-fit: cover;"
+                                >
+
+                            </div>
+
+                                  <div class="mb-4">
+
+                                <label class="form-label fw-semibold">
+                                    Select New Profile Image
+                                </label>
+
+                                <input
+                                    type="file"
+                                    name="userProfileImage"
+                                    id="imageInput"
+                                    class="form-control"
+                                    accept="image/*"
+                                    required
+                                >
+
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary w-100">
+
+                                Update Profile Image
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <%- include("partial/script") %>
+
+</body>
+</html>

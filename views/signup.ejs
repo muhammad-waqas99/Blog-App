@@ -1,32 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <%- include ("partial/head") %>
-    <title>iBlog </title>
+    <%- include("partial/head") %>
+    <title>iBlog | Sign Up</title>
 </head>
-<body>
 
-    <%- include("partial/nav") %>
-    <div class="container mt-4">
-    <form action="/user/signup" method="post">
-          <div class="mb-3">
-    <label for="fullName" class="form-label">Full Name</label>
-    <input type="text" class="form-control" id="fullName" aria-describedby="fullName">
+<body class="bg-light">
 
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-  </div>
-  <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
-  </div>
+<%- include("partial/nav") %>
 
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+
+            <div class="card border-0 shadow-lg rounded-4">
+
+             
+                <div class="card-header bg-primary text-white text-center py-4 rounded-top-4">
+                    <h3 class="mb-0 fw-bold">Create Account</h3>
+                    <small class="opacity-75">Join iBlog community</small>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <form action="/user/signup" method="post"  enctype="multipart/form-data">
+
+
+                        <div class="mt-4">
+                            <label for="userProfileImage">Profile Image  (Optional)</label>
+                            <input type="file" name="userProfileImage" id="userProfileImage">
+                        </div>
+
+         
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Full Name
+                            </label>
+
+                            <input
+                                name="fullName"
+                                type="text"
+                                class="form-control form-control-lg"
+                                placeholder="Enter your full name"
+                                required
+                            >
+                        </div>
+
+         
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Email Address
+                            </label>
+
+                            <input
+                                type="email"
+                                name="email"
+                                class="form-control form-control-lg"
+                                placeholder="Enter your email"
+                                required
+                            >
+                        </div>
+
+                   
+<div class="mb-4">
+    <label class="form-label fw-semibold">
+        Password
+    </label>
+
+    <div class="input-group">
+        <input
+            name="password"
+            type="password"
+            class="form-control form-control-lg"
+            placeholder="Create a strong password"
+            id="passwordField"
+            required
+        >
+
+        <button
+            class="btn btn-outline-secondary"
+            type="button"
+            id="togglePassword"
+        >
+            Show
+        </button>
+    </div>
 </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg fw-semibold rounded-3">
+                                Sign Up
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+  
+                <div class="card-footer text-center bg-white border-0 pb-4">
+                    <small class="text-muted">
+                        Already have an account?
+                        <a href="/user/signin" class="text-primary fw-semibold text-decoration-none">
+                            Sign in
+                        </a>
+                    </small>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<%- include("partial/script") %>
 </body>
- <%- include ("partial/script") %>
 </html>
