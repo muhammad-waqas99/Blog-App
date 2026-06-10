@@ -93,7 +93,7 @@ router.get("/profile", async (req, res) => {
 
 
     const userBlogs = await Blog.find({createdBy}).sort({ createdAt: -1 })
-  console.log(userBlogs)
+
 
   const currentUser = await User.findById(userId);
 
@@ -211,7 +211,7 @@ router.post('/update-password' , async (req, res ) =>{
 
    const password = currentPassword;
 
-   console.log(password)
+  
 
 
 
@@ -219,7 +219,6 @@ router.post('/update-password' , async (req, res ) =>{
    const user = await User.findById(userId)
    const email = user.email
 
-   console.log(user)
 
 
 try {
@@ -258,8 +257,7 @@ console.log(error)
 
 
 router.get('/update-profile-image' , async(req, res ) =>{
-  console.log("User routes loaded");
-      
+
  
 
   res.render("updateprofileimage", {
@@ -279,7 +277,7 @@ router.post("/update-profile-image" , upload.single("userProfileImage") ,async(r
 
   const currentProfileImage =currentUser.userProfileImage
 
-  console.log(currentProfileImage)
+
 
   currentUser.userProfileImage =  `/uploads/${req.file.filename}`;
 

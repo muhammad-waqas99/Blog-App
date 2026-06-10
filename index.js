@@ -7,11 +7,6 @@ require("dotenv").config();
 const dns = require('dns')
 dns.setServers(['1.1.1.1','8.8.8.8'])
 
-// mongoose.connect(process.env.MONGO_URL)
-// .then(() => console.log("MongoDB Connected"))
-// .catch(err => console.log(err));
-
-
 
 mongoose.connect(process.env.MONGO_URL)
 .then(() => {
@@ -21,25 +16,6 @@ mongoose.connect(process.env.MONGO_URL)
     console.log("MongoDB Error:");
     console.log(err);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -80,7 +56,7 @@ app.use('/blog' , blogRouter)
 app.get('/', async(req, res) => {
   const allBlogs =await Blog.find({})
 
-  console.log(req.user)
+
   res.render("home",{
     user : req.user,
     blogs : allBlogs
