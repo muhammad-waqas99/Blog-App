@@ -11,6 +11,9 @@ router.get("/signin", (req, res) => {
 });
 
 router.post("/signin", async (req, res) => {
+
+
+  console.log("SIGNIN BODY:", req.body);
   const { email, password } = req.body;
 
   try {
@@ -31,10 +34,16 @@ router.post("/signin", async (req, res) => {
 });
 
 router.get("/signup", (req, res) => {
+  console.log("ROUTE HIT");
   res.render("signup");
 });
 
 router.post("/signup", upload.single("userProfileImage"), async (req, res) => {
+
+  console.log("SIGNUP FILE:", req.file);
+
+  console.log(req.body);
+
   try {
     const { fullName, email, password } = req.body;
 
@@ -87,16 +96,22 @@ router.get("/logout", (req, res) => {
 //User profile  and account manage routes
 
 router.get("/profile", async (req, res) => {
+
+
+    console.log(" PROFILE ROUTE HIT");
+
+  console.log("REQ USER:", req.user);
   const userId = req.user._id;
 
+    console.log("USER ID:", userId);
   const createdBy = userId
 
 
     const userBlogs = await Blog.find({createdBy}).sort({ createdAt: -1 })
-
+    console.log("BLOGS:", userBlogs.length);
 
   const currentUser = await User.findById(userId);
-
+     console.log("USER:", currentUser);
  
 
   return res.render("profile", {
@@ -268,7 +283,12 @@ router.get('/update-profile-image' , async(req, res ) =>{
 
 
 router.post("/update-profile-image" , upload.single("userProfileImage") ,async(req,res) =>{
+   
 
+   console.log(" IMAGE UPDATE HIT");
+
+  console.log("OLD IMAGE:", req.user.userProfileImage);
+  console.log("NEW FILE:", req.file);
    const userId =req.user._id;
     const currentUser = await User.findById(userId);
   

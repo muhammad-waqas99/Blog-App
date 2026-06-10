@@ -56,6 +56,12 @@ router.post(
 
     try {
 
+       console.log(" CREATE BLOG HIT");
+
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+  console.log("USER:", req.user);
+
       const { title, body } = req.body;
 
       if (!title || !body) {
