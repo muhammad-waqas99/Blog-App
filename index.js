@@ -55,7 +55,7 @@ app.use('/blog' , blogRouter)
 
 app.get('/', async (req, res) => {
   const allBlogs = await Blog.aggregate([
-    { $sample: { size: 100 } } // jitne blogs chahiye utna size
+    { $sample: { size: 100 } } 
   ]);
 
   res.render("home", {
