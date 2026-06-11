@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
 
   userProfileImage:{
     type:String,
-    default:"/public/images/profileImage.png"
+    default:"/images/profileImage.png"
   }
 
 },{timestamps:true})
