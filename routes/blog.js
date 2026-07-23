@@ -1,8 +1,8 @@
 const { Router } = require("express");
 const router = Router();
 const path = require("path");
-const multer = require("multer");
-
+const uploadToCloudinary = require("../service/uploadToCloudinary");
+const multer =require('multer')
 const Blog = require("../models/Blog");
 const Comment = require("../models/Comment");
 const upload = require("../service/multerConfig")
@@ -23,25 +23,29 @@ router.get("/:id", async (req, res) => {
       .populate("createdBy");
 
     if (!blog) {
-      return res.status(404).render("404", {
+      return res.status(404).render("home", {
+        user: req.user,
+        blogs: [],
         error: "Blog not found",
       });
     }
 
     const comments = await Comment.find({
       blogId: req.params.id,
-    }).populate("createdBy");
+    }).populate("createdBy").catch(() => []);
 
     return res.render("blog", {
       user: req.user,
       blog,
-      comments,
+      comments: comments || [],
     });
 
   } catch (err) {
     console.error(err);
 
-    return res.status(500).render("404", {
+    return res.status(500).render("home", {
+      user: req.user,
+      blogs: [],
       error: "Unable to load blog",
     });
   }
@@ -77,8 +81,8 @@ router.post(
         createdBy: req.user._id,
 };
 
-if (req.file) {
-   blogData.bodyImageURL = `/uploads/${req.file.filename}`;
+if(req.file){
+   blogData.bodyImageURL = await uploadToCloudinary(req.file);
 }
 
       await Blog.create(blogData)

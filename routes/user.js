@@ -3,8 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const Blog = require("../models/Blog");
 const upload = require("../service/multerConfig");
-const fs = require("fs")
-const multer  = require("multer")
+const uploadToCloudinary = require("../service/uploadToCloudinary");
 
 router.get("/signin", (req, res) => {
   res.render("signin");
@@ -59,10 +58,9 @@ const userData = {
    password
 };
 
-if (req.file) {
-   userData.userProfileImage = `/uploads/${req.file.filename}`;
+if(req.file){
+   userData.userProfileImage = await uploadToCloudinary(req.file);
 }
-
 await User.create(userData);
 
     return res.redirect("/user/signin");
@@ -96,68 +94,70 @@ router.get("/logout", (req, res) => {
 //User profile  and account manage routes
 
 router.get("/profile", async (req, res) => {
+  if (!req.user) return res.redirect("/user/signin");
 
+  try {
+    const userId = req.user._id;
+    const createdBy = userId;
 
-    console.log(" PROFILE ROUTE HIT");
+    const userBlogs = await Blog.find({ createdBy }).sort({ createdAt: -1 }).catch(() => []);
+    const currentUser = await User.findById(userId).catch(() => req.user);
 
-  console.log("REQ USER:", req.user);
-  const userId = req.user._id;
-
-    console.log("USER ID:", userId);
-  const createdBy = userId
-
-
-    const userBlogs = await Blog.find({createdBy}).sort({ createdAt: -1 })
-    console.log("BLOGS:", userBlogs.length);
-
-  const currentUser = await User.findById(userId);
-     console.log("USER:", currentUser);
- 
-
-  return res.render("profile", {
-    user: currentUser,
-    blogs:userBlogs
-  });
+    return res.render("profile", {
+      user: currentUser || req.user,
+      blogs: userBlogs || []
+    });
+  } catch (err) {
+    console.error("Profile route error:", err);
+    return res.redirect("/user/signin");
+  }
 });
 
 router.get("/update-name", async (req, res) => {
-  const userId = req.user._id;
+  if (!req.user) return res.redirect("/user/signin");
 
-  const currentUser = await User.findById(userId);
+  try {
+    const userId = req.user._id;
+    const currentUser = await User.findById(userId).catch(() => req.user);
 
-  res.render("updatename", {
-    user: currentUser,
-  });
+    res.render("updatename", {
+      user: currentUser || req.user,
+    });
+  } catch (err) {
+    res.render("updatename", {
+      user: req.user,
+    });
+  }
 });
 
 router.post("/update-name", async (req, res) => {
+  if (!req.user) return res.redirect("/user/signin");
+
   try {
     const { _id } = req.user;
-
     const fullName = req.body.fullName;
+    const newName = (fullName || "").trim();
 
-const newName = fullName.trim();
+    if (!newName) {
+      return res.render("updatename", {
+        user: req.user,
+        error: "Name cannot be empty",
+      });
+    }
 
-if (!newName) {
-  return res.render("updatename", {
-    user: req.user,
-    error: "Name cannot be empty",
-  });
-}
+    if (newName.length < 3) {
+      return res.render("updatename", {
+        user: req.user,
+        error: "Name must be at least 3 characters long",
+      });
+    }
 
-if (newName.length < 3) {
-  return res.render("updatename", {
-    user: req.user,
-    error: "Name must be at least 3 characters long",
-  });
-}
-
-if (newName === req.user.fullName) {
-  return res.render("updatename", {
-    user: req.user,
-    error: "Please enter a different name",
-  });
-}
+    if (newName === req.user.fullName) {
+      return res.render("updatename", {
+        user: req.user,
+        error: "Please enter a different name",
+      });
+    }
 
     await User.findByIdAndUpdate(_id, {
       fullName: newName,
@@ -170,164 +170,125 @@ if (newName === req.user.fullName) {
       const firstError = Object.values(err.errors)[0].message;
 
       return res.render("updatename", {
+        user: req.user,
         error: firstError,
       });
     }
 
     return res.status(500).render("updatename", {
+      user: req.user,
       error: "Something went wrong. Please try again.",
     });
   }
 });
 
+router.get('/update-password', async (req, res) => {
+  if (!req.user) return res.redirect("/user/signin");
 
+  try {
+    const userId = req.user._id;
+    const currentUser = await User.findById(userId).catch(() => req.user);
 
+    res.render("changepassword", {
+      user: currentUser || req.user,
+    });
+  } catch (err) {
+    res.render("changepassword", {
+      user: req.user,
+    });
+  }
+});
 
+router.post('/update-password', async (req, res) => {
+  if (!req.user) return res.redirect("/user/signin");
 
-router.get('/update-password' , async (req,res) =>{
-   
   const userId = req.user._id;
+  const { currentPassword, newPassword, confirmPassword } = req.body;
 
-  const currentUser = await User.findById(userId);
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.render("changepassword", { user: req.user, error: "User not found" });
+    }
 
-  res.render("changepassword", {
-    user: currentUser,
-  });
-})
-
-
-
-router.post('/update-password' , async (req, res ) =>{
-
-
-  const userId = req.user._id;
-
-
-  const {currentPassword, newPassword, confirmPassword} =req.body
-
-
-
-
-      if (!currentPassword || !newPassword || !confirmPassword) {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       return res.render("changepassword", {
+        user,
         error: "All fields are required",
       });
-
-
     }
 
     if (currentPassword === newPassword) {
-  return res.render("changepassword", {
-    user,
-    error: "New password cannot be the same as current password",
-  });
-}
+      return res.render("changepassword", {
+        user,
+        error: "New password cannot be the same as current password",
+      });
+    }
 
+    if (newPassword !== confirmPassword) {
+      return res.render("changepassword", {
+        user,
+        error: "New password and confirm password do not match",
+      });
+    }
 
-   const password = currentPassword;
+    await User.comparePasswordAndAuthentication(user.email, currentPassword);
 
-  
+    user.password = newPassword;
+    await user.save();
 
+    return res.redirect('/user/profile');
+  } catch (error) {
+    console.log(error);
+    return res.render('changepassword', {
+      user: req.user,
+      error: 'Invalid Current Password'
+    });
+  }
+});
 
-
-
-   const user = await User.findById(userId)
-   const email = user.email
-
-
-
-try {
-
-  
-   await User.comparePasswordAndAuthentication(email,password)
-
- 
-
-
-        if(newPassword !==confirmPassword) return res.render('changepassword' , {error : " New password and confrim password are not same "})
-
- user.password=newPassword
-
-   user.save()
-
-
-
-   res.redirect('/user/profile')
-
-
- 
-
-
-  
-} catch (error) {
-  
-console.log(error)
-   return res.render('changepassword' , {
-
-    error:'invalid Current Password'
-
-   })
-}
-})
-
-
-router.get('/update-profile-image' , async(req, res ) =>{
-
- 
+router.get('/update-profile-image', async (req, res) => {
+  if (!req.user) return res.redirect("/user/signin");
 
   res.render("updateprofileimage", {
     user: req.user,
-   
   });
-})
+});
 
+router.post("/update-profile-image", upload.single("userProfileImage"), async (req, res) => {
+  if (!req.user) return res.redirect("/user/signin");
 
-router.post("/update-profile-image" , upload.single("userProfileImage") ,async(req,res) =>{
-   
+  const userId = req.user._id;
 
-   console.log(" IMAGE UPDATE HIT");
+try {
+  const currentUser = await User.findById(userId);
 
-  console.log("OLD IMAGE:", req.user.userProfileImage);
-  console.log("NEW FILE:", req.file);
-   const userId =req.user._id;
-    const currentUser = await User.findById(userId);
-  
- try {
-
-
-  const currentProfileImage =currentUser.userProfileImage
-
-
-
-  currentUser.userProfileImage =  `/uploads/${req.file.filename}`;
-
-  await currentUser.save()
-
-if (currentProfileImage !== "/images/default-user.png") {
-  try {
-    await fs.promises.unlink(`./public${currentProfileImage}`);
-  } catch (err) {
-    console.log(err.message);
-  }
-}
-   return res.redirect('/user/profile')
-
-  
-
-
-
-
-  
- } catch (error) {
-
-    return res.status(500).render("updatename", {
-      error: "Something went wrong. Please try again.",
+  if (!currentUser) {
+    return res.render("updateprofileimage", {
+      user: req.user,
+      error: "User not found",
     });
-  
-  console.log(error.message)
- }
+  }
 
-})
+  if (req.file) {
+    const imageUrl = await uploadToCloudinary(req.file);
+
+    currentUser.userProfileImage = imageUrl;
+
+    await currentUser.save();
+  }
+
+  return res.redirect("/user/profile");
+
+} catch (error) {
+  console.error(error);
+
+  return res.status(500).render("updateprofileimage", {
+    user: req.user,
+    error: "Something went wrong. Please try again.",
+  });
+}
+});
 
 
 
