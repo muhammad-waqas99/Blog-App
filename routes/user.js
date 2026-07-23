@@ -12,7 +12,6 @@ router.get("/signin", (req, res) => {
 router.post("/signin", async (req, res) => {
 
 
-  console.log("SIGNIN BODY:", req.body);
   const { email, password } = req.body;
 
   try {
@@ -33,15 +32,13 @@ router.post("/signin", async (req, res) => {
 });
 
 router.get("/signup", (req, res) => {
-  console.log("ROUTE HIT");
+
   res.render("signup");
 });
 
 router.post("/signup", upload.single("userProfileImage"), async (req, res) => {
 
-  console.log("SIGNUP FILE:", req.file);
 
-  console.log(req.body);
 
   try {
     const { fullName, email, password } = req.body;
@@ -65,7 +62,7 @@ await User.create(userData);
 
     return res.redirect("/user/signin");
   } catch (err) {
-    console.error(err);
+   console.error(err.message);
 
     if (err.name === "ValidationError") {
       const firstError = Object.values(err.errors)[0].message;
@@ -108,7 +105,7 @@ router.get("/profile", async (req, res) => {
       blogs: userBlogs || []
     });
   } catch (err) {
-    console.error("Profile route error:", err);
+    console.error("Profile route error:", err.message);
     return res.redirect("/user/signin");
   }
 });
@@ -165,7 +162,7 @@ router.post("/update-name", async (req, res) => {
 
     return res.redirect("/user/profile");
   } catch (err) {
-    console.log(err);
+    console.log(err.message);
     if (err.name === "ValidationError") {
       const firstError = Object.values(err.errors)[0].message;
 
@@ -239,7 +236,7 @@ router.post('/update-password', async (req, res) => {
 
     return res.redirect('/user/profile');
   } catch (error) {
-    console.log(error);
+   
     return res.render('changepassword', {
       user: req.user,
       error: 'Invalid Current Password'
@@ -281,7 +278,7 @@ try {
   return res.redirect("/user/profile");
 
 } catch (error) {
-  console.error(error);
+  
 
   return res.status(500).render("updateprofileimage", {
     user: req.user,

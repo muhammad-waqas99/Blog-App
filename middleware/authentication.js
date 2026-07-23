@@ -5,7 +5,7 @@ function checkForAuthenticationCookie(cookieName) {
   return async (req, res, next) => {
     const token = req.cookies?.cookieName || req.cookies?.[cookieName];
 
-    console.log(" TOKEN:", token);
+   
 
     if (!token) {
       req.user = null;
@@ -16,7 +16,6 @@ function checkForAuthenticationCookie(cookieName) {
     const payload = verifyToken(token);
 
 
-     console.log(" USER PAYLOAD:",payload);
     if (!payload) {
       req.user = null;
       return next();

@@ -41,7 +41,7 @@ router.get("/:id", async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+   console.error(err.message);
 
     return res.status(500).render("home", {
       user: req.user,
@@ -60,11 +60,6 @@ router.post(
 
     try {
 
-       console.log(" CREATE BLOG HIT");
-
-  console.log("BODY:", req.body);
-  console.log("FILE:", req.file);
-  console.log("USER:", req.user);
 
       const { title, body } = req.body;
 
@@ -90,7 +85,7 @@ if(req.file){
 
     } catch (err) {
 
-      console.error(err);
+     console.error(err.message);
 
       if (err instanceof multer.MulterError) {
         return res.render("addBlog", {
@@ -147,7 +142,7 @@ router.post(
 
     } catch (err) {
 
-      console.error(err);
+   console.error(err.message);
 
       return res.redirect(
         `/blog/${req.params.blogId}`

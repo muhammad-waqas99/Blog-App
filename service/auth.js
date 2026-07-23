@@ -23,7 +23,7 @@ function verifyToken(token) {
     const payload = jwt.verify(token, jwtSecret);
     return payload;
   } catch (err) {
-    console.error("Token verification failed:", err);
+    console.error("Token verification failed:", err.message);
     return null;
   }
 
