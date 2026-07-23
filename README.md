@@ -308,5 +308,5 @@ Blog-App/
 
 **Muhammad Waqas**
 
-- **GitHub:** [muhammad-waqas99](https://github.com/muhammad-waqas99)
 - **Email:** muhammadwaqas.dev99@gmail.com
+- **LinkedIn** www.linkedin.com/in/waqas-fullstack
